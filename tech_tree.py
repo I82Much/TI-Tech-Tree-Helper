@@ -7,7 +7,7 @@ COMBAT = 'Combat'
 BIOTECH = 'Biotech'
 GENERAL = 'General'
 LOGISTICS = 'Logistics'
-Types = [COMBAT, BIOTECH, GENERAL, LOGISTICS]
+TECH_TYPES = [COMBAT, BIOTECH, GENERAL, LOGISTICS]
 
 ENVIRO_COMPENSATOR = Technology('Enviro Compensator', 
   GENERAL,
@@ -44,7 +44,8 @@ DACXIVE_ANIMATORS = Technology(
   'Dacxive Animators', 
   BIOTECH,
   'Extra Ground Forces During Invasion',
-  'If you win an Invasion Combat, roll once for every Ground Force unit killed (yours and your opponent's).  For every roll of 6+, place one Ground FOrce unit on the planet from your reinforcements.')', 
+  ('If you win an Invasion Combat, roll once for every Ground Force unit killed (yours and your opponent\'s). '
+  'For every roll of 6+, place one Ground FOrce unit on the planet from your reinforcements.'),
   Dependency(False, [NEURAL_MOTIVATOR]))
 
 ANTIMASS_DEFLECTORS = Technology(
@@ -63,40 +64,134 @@ CYBERNETICS = Technology(
 
 GEN_SYNTHESIS = Technology(
   'Gen Synthesis',
-  COMBAT,
-  '',
-  '',
+  BIOTECH,
+  '+1 Combat Rolls for Ground Units and Chance of Saving Throw',
+  ('All of your Ground Forces now receive +1 on all combat rolls during Invasion Combat.\n'
+  'When one of your Ground Force units is destroyed, roll a die: On a result of 5+, the unit is '
+  'instead returned to a planet in your Home System'),
   Dependency(False, [CYBERNETICS]))
 
-INTEGRATED_ECONOMY = Technology('Integrated Economy', COMBAT, '', '', Dependency(True, [CYBERNETICS,MICRO_TECHNOLOGY]))
+INTEGRATED_ECONOMY = Technology(
+  'Integrated Economy', 
+  GENERAL,
+  'New Units Move to Adjacent System', 
+  ('When producing units at your Space Docks, you may now place '
+  'the new units in any activated, adjacent system that is empty, '
+  'or friendly.  You may place PDS and Ground Force units on any '
+  'friendly planet wthin this range.'),
+  Dependency(True, [CYBERNETICS,MICRO_TECHNOLOGY]))
 
-XRD_TRANSPORTERS = Technology('XRD Transporters', COMBAT, '', '', Dependency(False, [ANTIMASS_DEFLECTORS]))
+XRD_TRANSPORTERS = Technology(
+  'XRD Transporters',
+  LOGISTICS,
+  '+1 Movement to Carriers',
+  'All of your Carriers now receive +1 movement.',
+  Dependency(False, [ANTIMASS_DEFLECTORS]))
 
-TYPE_IV_DRIVE = Technology('Type IV Drive', COMBAT, '', '', Dependency(True, [NEURAL_MOTIVATOR,XRD_TRANSPORTERS]))
+TYPE_IV_DRIVE = Technology(
+  'Type IV Drive',
+  LOGISTICS,
+  '+1 Movement to Cruisers and Dreadnoughts',
+  'All of your Cruisers and Dreadnoughts now receive +1 movement.', 
+  Dependency(True, [NEURAL_MOTIVATOR,XRD_TRANSPORTERS]))
 
-ADVANCED_FIGHTERS = Technology('Advanced Fighters', COMBAT, '', '', Dependency(False, [TYPE_IV_DRIVE]))
+ADVANCED_FIGHTERS = Technology(
+  'Advanced Fighters',
+  LOGISTICS,
+  '+1 Combat to Fighters, Independent Movement Rate of 2',
+  ('Your Fighters may now move independently with a movement rate of 2 '
+  'and receive +1 on all combat rolls.\n'
+  'Your Fighters do not require the support of Carriers or Space Docks, '
+  'and enemy ships may not move through a system your Fighters occupy'),
+  Dependency(False, [TYPE_IV_DRIVE]))
 
-HYLAR_V_ASSAULT_LASER = Technology('Hylar V Assault Laser', COMBAT, '', '', Dependency(False, []))
+HYLAR_V_ASSAULT_LASER = Technology('Hylar V Assault Laser',
+  COMBAT,
+  '+1 Combat Rolls for Cruisers and Destroyers',
+  'All of your Cruisers and Destroyers now receive +1 on all combat rolls.',
+  Dependency(False, []))
 
-DEEP_SPACE_CANNON = Technology('Deep Space Cannon', COMBAT, '', '', Dependency(False, [HYLAR_V_ASSAULT_LASER]))
+DEEP_SPACE_CANNON = Technology(
+  'Deep Space Cannon',
+  COMBAT,
+  '+1 Range to PDS',
+  'Enemy fleets in adjacent systems are now in range of your PDS units.',
+  Dependency(False, [HYLAR_V_ASSAULT_LASER]))
 
-WAR_SUN = Technology('War Sun', COMBAT, '', '', Dependency(True, [SARWEEN_TOOLS,DEEP_SPACE_CANNON]))
+WAR_SUN = Technology(
+  'War Sun',
+  COMBAT,
+  'War Sun available',
+  'You are now allowed to produce War Sun units.',
+  Dependency(True, [SARWEEN_TOOLS,DEEP_SPACE_CANNON]))
 
-MAGEN_DEFENSE_GRID = Technology('Magen Defense Grid', COMBAT, '', '', Dependency(False, [DEEP_SPACE_CANNON]))
+MAGEN_DEFENSE_GRID = Technology(
+  'Magen Defense Grid',
+  COMBAT,
+  '+1 Combat Rolls for PDS and PDS Defended Ground Units',
+  ('All of your PDS units now receive +1 on all combat rolls.\n'
+  'In addition, all of your defending Ground Forces on a planet with a '
+  'PDS receive +1 on all combat rolls during Invasion Combat.'),
+  Dependency(False, [DEEP_SPACE_CANNON]))
 
-LIGHT_WAVE_DEFLECTORS = Technology('Light/Wave Deflectors', COMBAT, '', '', Dependency(False, [XRD_TRANSPORTERS,MAGEN_DEFENSE_GRID]))
+LIGHT_WAVE_DEFLECTORS = Technology(
+  'Light/Wave Deflectors',
+  LOGISTICS,
+  'Move Through Enemy Systems',
+  ('Your ships may now move through systems containing enemy ships '
+  'and continue their movement to the activated system'),
+  Dependency(False, [XRD_TRANSPORTERS,MAGEN_DEFENSE_GRID]))
 
-TRANSIT_DIODES = Technology('Transit Diodes', COMBAT, '', '', Dependency(False, [LIGHT_WAVE_DEFLECTORS,DACXIVE_ANIMATORS]))
+TRANSIT_DIODES = Technology(
+  'Transit Diodes',
+  GENERAL,
+  'Move 4 Ground Forces As Action',
+  ('As an action, you may spend one Command Counter from your Strategic Allocation to '
+  'immediately move up to four of your Ground FOrces from any one of your planets to '
+  'any other planet you control'),
+  Dependency(False, [LIGHT_WAVE_DEFLECTORS,DACXIVE_ANIMATORS]))
 
-GRAVITON_LASER_SYSTEM = Technology('Graviton Laser System', COMBAT, '', '', Dependency(False, [DEEP_SPACE_CANNON]))
+GRAVITON_LASER_SYSTEM = Technology(
+  'Graviton Laser System',
+  GENERAL, 
+  'Reroll Each PDS Miss',
+  ('When you make a combat roll with a PDS unit and miss, you may now make a '
+  'single re-roll for each roll that missed'),
+  Dependency(False, [DEEP_SPACE_CANNON]))
 
-ASSAULT_CANNON = Technology('Assault Cannon', COMBAT, '', '', Dependency(True, [DEEP_SPACE_CANNON,CYBERNETICS]))
+ASSAULT_CANNON = Technology(
+  'Assault Cannon',
+  COMBAT,
+  '1 Free Shot Per Dreadnought ',
+  ('Before any Space Battle begins, your participating Dreadnoughts may each fire '
+  'one shot. Any hits are applied immediately, and casualties do not receive return fire.'),
+  Dependency(True, [DEEP_SPACE_CANNON,CYBERNETICS]))
 
-GRAVITON_NEGATOR = Technology('Graviton Negator', COMBAT, '', '', Dependency(False, [ASSAULT_CANNON]))
+GRAVITON_NEGATOR = Technology(
+  'Graviton Negator',
+  COMBAT,
+  'Bombard Through PDS Defense, Invading Fighters',
+  ('Your Dreadnoughts may now bombard planets that contain PDS units.  Your Fighters '
+  'may participate in Invasion Combat. Surviving Fighters are returned to space after '
+  'the combat and can never establish control of a planet.'),
+  Dependency(False, [ASSAULT_CANNON]))
 
-FLEET_LOGISTICS = Technology('Fleet Logistics', COMBAT, '', '', Dependency(False, [GRAVITON_NEGATOR]))
+FLEET_LOGISTICS = Technology(
+  'Fleet Logistics',
+  LOGISTICS,
+  '2 Tactical Actions',
+  ('When taking a Tactical Action, you may now take two Tactical Actions, one after '
+  'the other, before your turn ends.'),
+  Dependency(False, [GRAVITON_NEGATOR]))
 
-X_89_BACTERIAL_WEAPON = Technology('X-89 Bacterial Weapon', COMBAT, '', '', Dependency(False, [ASSAULT_CANNON,TRANSIT_DIODES]))
+X_89_BACTERIAL_WEAPON = Technology(
+  'X-89 Bacterial Weapon',
+  BIOTECH, 
+  'Immediately Destroy All Ground Forces With War Sun or Dreadnought',
+  ('Your Dreadnought or War Sun units may now use this option before bombarding. '
+  'Immediately destroy all enemy Ground Forces on the planet.  Then discard all of '
+  'your Action cards.'), 
+  Dependency(False, [ASSAULT_CANNON,TRANSIT_DIODES]))
 
 TOPOLOGICAL_ORDER = [
   ENVIRO_COMPENSATOR,
@@ -189,7 +284,13 @@ def main():
   #       full_text='\'\'',
   #       dependencies=dependencies_string
   #     )
-  print '\n'.join(map(str, TOPOLOGICAL_ORDER))
+  #print '\n'.join(map(str, TOPOLOGICAL_ORDER))
+  
+  for tech_type in TECH_TYPES:
+    print tech_type
+    for t in TOPOLOGICAL_ORDER:
+      if t.type == tech_type:
+        print t.name
   
 if __name__ == '__main__':
   main()
