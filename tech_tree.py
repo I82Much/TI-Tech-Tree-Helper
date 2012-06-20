@@ -1,7 +1,11 @@
 from collections import namedtuple
+import itertools
 
 Dependency = namedtuple('Dependency', ['all_necessary', 'technologies'])
-Technology = namedtuple('Technology', ['name', 'type', 'short_description', 'full_text', 'dependencies'])
+
+class Technology(namedtuple('Technology', ['name', 'type', 'short_description', 'full_text', 'dependencies'])):
+  def __repr__(self):
+    return self.name
 
 COMBAT = 'Combat'
 BIOTECH = 'Biotech'
@@ -140,7 +144,7 @@ LIGHT_WAVE_DEFLECTORS = Technology(
   'Move Through Enemy Systems',
   ('Your ships may now move through systems containing enemy ships '
   'and continue their movement to the activated system'),
-  Dependency(False, [XRD_TRANSPORTERS,MAGEN_DEFENSE_GRID]))
+  Dependency(True, [XRD_TRANSPORTERS,MAGEN_DEFENSE_GRID]))
 
 TRANSIT_DIODES = Technology(
   'Transit Diodes',
@@ -263,34 +267,82 @@ dependencies = {
   'X-89 Bacterial Weapon': ['Assault Cannon', 'Transit Diodes'],
 }
 
+def EnumeratePaths(tech):
+  """Returns a list of possible paths to this technology"""
+  #print tech.name
+  
+  
+  paths = []
+  if not tech.dependencies.technologies:
+    return [[]]
+
+  elif tech.dependencies.all_necessary:
+    # depends on A and B.  A has N paths, B has M paths.
+    # result is A X B, for a total of N * M paths.
+    
+    assert len(tech.dependencies.technologies) == 2
+    a_tech = tech.dependencies.technologies[0]
+    b_tech = tech.dependencies.technologies[1]
+    
+    a_paths = [path + [a_tech] for path in EnumeratePaths(a_tech)]
+    b_paths = [path + [b_tech] for path in EnumeratePaths(b_tech)]
+    
+    for a_path, b_path in itertools.product(a_paths, b_paths):
+      paths.append(a_path + b_path)
+    
+  else:
+    for dep in tech.dependencies.technologies:
+      additional_paths = EnumeratePaths(dep)
+      for additional_path in additional_paths:
+        paths.append(additional_path + [dep])
+  
+  return paths
+  
 def MakeConstant(tech):
   return tech.replace(' ', '_').replace('-', '_').replace('/', '_').upper()
   
 def main():
-  # for tech in correct_order:
-  #     deps = dependencies[tech]
-  #     capitalized = MakeConstant(tech)
-  #     dependencies_string = 'Dependency(False, [])'
-  #     if deps:
-  #       if True == deps[0]:
-  #         dependencies_string = 'Dependency(True, [%s])' %(','.join([MakeConstant(x) for x in deps[1:]]))
-  #       else:
-  #         dependencies_string = 'Dependency(False, [%s])' %(','.join([MakeConstant(x) for x in deps]))
-  #     print '{cap_name} = Technology(\'{standard_name}\', {type}, {short_description}, {full_text}, {dependencies})'.format(
-  #       cap_name=capitalized,
-  #       standard_name=tech,
-  #       type='COMBAT',
-  #       short_description='\'\'',
-  #       full_text='\'\'',
-  #       dependencies=dependencies_string
-  #     )
-  #print '\n'.join(map(str, TOPOLOGICAL_ORDER))
+  #assert EnumeratePaths(HYLAR_V_ASSAULT_LASER) == [[]], map(StringifyPath, EnumeratePaths(HYLAR_V_ASSAULT_LASER))
+  assert EnumeratePaths(DEEP_SPACE_CANNON) == [[HYLAR_V_ASSAULT_LASER]], EnumeratePaths(DEEP_SPACE_CANNON)
+  
+  assert EnumeratePaths(GRAVITON_LASER_SYSTEM) == [[HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON]], EnumeratePaths(GRAVITON_LASER_SYSTEM)
+  
+  CYBERNETICS_PATHS = [
+    [ANTIMASS_DEFLECTORS],
+    [ENVIRO_COMPENSATOR, STASIS_CAPSULES]
+  ]
+  
+  STATIS_CAPSULES_PATHS = [
+    [ENVIRO_COMPENSATOR]
+  ]
+  
+  
+  assert EnumeratePaths(CYBERNETICS) == CYBERNETICS_PATHS, EnumeratePaths(CYBERNETICS)
+  assert EnumeratePaths(STASIS_CAPSULES) == STATIS_CAPSULES_PATHS, EnumeratePaths(STATIS_CAPSULES_PATHS)
+  
+  WAR_SUN_PATHS = [
+    [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ENVIRO_COMPENSATOR, SARWEEN_TOOLS]
+  ]
+  LIGHT_WAVE_DEFLECTORS_PATHS = [
+    [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, MAGEN_DEFENSE_GRID, ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS]
+  ]
+  #assert EnumeratePaths(WAR_SUN) == WAR_SUN_PATHS, EnumeratePaths(WAR_SUN)
+  #assert EnumeratePaths(LIGHT_WAVE_DEFLECTORS) == LIGHT_WAVE_DEFLECTORS_PATHS, EnumeratePaths(LIGHT_WAVE_DEFLECTORS)
+
+  # print EnumeratePaths(TYPE_IV_DRIVE)
+  #   print EnumeratePaths(X_89_BACTERIAL_WEAPON)
+  
   
   for tech_type in TECH_TYPES:
-    print tech_type
-    for t in TOPOLOGICAL_ORDER:
-      if t.type == tech_type:
-        print t.name
+      print tech_type
+      for t in TOPOLOGICAL_ORDER:
+        if t.type == tech_type:
+          print '\t' + t.name
+          paths = EnumeratePaths(t)
+          print '\t %d paths' %(len(paths))
+          for path in paths:
+            print '\t\t: %d ' %(len(path)) + '->'.join([dep_tech.name for dep_tech in path])
+        
   
 if __name__ == '__main__':
   main()
