@@ -1,0 +1,94 @@
+rect {
+  fill: #888;
+  stroke-width:1;
+}
+
+rect.combat {
+  fill: #F00;
+}
+
+rect.biotech {
+  fill: #0F0;
+}
+
+rect.logistics {
+  fill: #00F;
+}
+
+rect.general {
+  fill: #FF0;
+}
+
+rect.sel {
+/*  stroke-width:5;*/
+/*  fill: #FFF;*/
+  stroke: #000;
+  stroke-width:5;
+}
+
+
+tspan {
+  font-size: x-small;
+  
+}
+table {
+  border-spacing:20px
+}
+
+td {
+  font-size: small;
+  
+  border-radius: 4px;
+  border: 2px solid white;
+  
+}
+
+td.tech {
+  width: 16.667%;
+  height: 25%;
+}
+
+td.Combat {
+  background-color: #F0877A;
+}
+
+td.Biotech {
+  background-color: #93F980;
+}
+
+td.Logistics {
+  background-color: #FF9;
+}
+
+td.General {
+  background-color: #98ACDA;
+}
+
+td.Unselected {
+  opacity: 0.6;
+}
+
+td.Selected {
+  opacity: 1.0;
+  border-color: black;
+  border-width: 2px;
+}
+
+td.Hover {
+  opacity: 1.0;
+  border-color: black;
+}
+
+
+td.Unavailable {
+  opacity: 0.3;
+}
+
+td.Available {
+  opacity: 1.0;
+}
+
+td.Purchased {
+  color: white;
+}
+
