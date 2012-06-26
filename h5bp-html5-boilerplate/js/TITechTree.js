@@ -418,6 +418,7 @@ function purchase(technology_id) {
 function unselectAll() {
   $('#tech_grid td.tech').each(function(index, elem) {
     $(elem).removeClass('Selected');
+    $(elem).addClass('Unselected');
   });
 }
 
@@ -585,7 +586,8 @@ function createTable() {
   console.debug('Creating table');
   d3.selectAll('table').remove();
 
-  d3.selectAll('p.fulltext').remove();
+
+  d3.selectAll('#fulltext > p').remove();
   d3.selectAll('#prereqs > ul').remove();
   
   var table = d3.select('#grid').append('table')
