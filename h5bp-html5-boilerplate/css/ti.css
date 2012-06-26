@@ -89,6 +89,6 @@ td.Available {
 }
 
 td.Purchased {
-  color: white;
+  font-weight: bold;
 }
 

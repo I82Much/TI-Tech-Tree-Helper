@@ -256,15 +256,22 @@ var this_ = this;
 createTable();
 
 // TODO(ndunn): state should be kept via url params for v1.0
-var purchasedTechnologies = parsePurchased();
-var selected = null;
+var purchased = parsePurchased();
+$(purchased).each(function(index, elem) {
+  purchase(elem);
+});
+
+
+var selection = null;
 var hide = getURLParameter('hide') == ['true'];
 if (hide) {
   console.debug('checking the hide unavailable techs button');
   $('#hide_unavailable_techs').prop('checked', true);
   hideTechnologies();
 }
-console.debug('Purchased techs: ' + purchasedTechnologies);
+
+// disable purchase button until selection is made
+enablePurchase(false);
 
 //http://trends.truliablog.com/vis/tru247/tru247.js?v=1.01
 
@@ -278,22 +285,65 @@ $('#tech_grid td.tech').hover(function() {
 	});
 
 $('#tech_grid td.tech').click(function() {
-  $('#tech_grid_td').each(function(index, elem) {
-    $(elem).removeClass('Selected');
-  });
-  this_.selected = $(this)[0].id;
-  $(this).addClass('Selected');
+  var clicked = $(this)[0].id;
+  if (clicked == this_.selection) {
+    unselectAll();
+    this_.selection = null;
+    enablePurchase(false);
+    return;
+  }
+  else {
+    unselectAll();
+    this_.selection = $(this)[0].id;
+    // New selection is made; see if we can purchase it
+    var canPurchase = canGet(this_.selection);
+    enablePurchase(canPurchase);
+  
+    $(this).addClass('Selected');
+  }
 });
 
 // Hide unavailable technologies
 $('#hide_unavailable_techs').change(function() {
   // Going from unclicked to clicked state
   if ($(this)[0].checked) {
+    this_.hide = true;
     hideTechnologies();
   } else {
+    this_.hide = false;
     unhideTechnologies();
   }
 });
+
+$('#purchase').click(function() {
+  unselectAll();
+  purchase(this_.selection);
+});
+
+function refresh() {
+  console.debug('Refreshing');
+  console.debug('Hidden: ' + this_.hide);
+  if (this_.hide) {
+    hideTechnologies();
+  }
+}
+
+function purchase(technology) {
+  this_.purchased.push(technology);
+  $('#' + technology).addClass('Purchased');
+  console.debug('Purchased technologies: ' + this_.purchased);
+  refresh();
+}
+
+function unselectAll() {
+  $('#tech_grid td.tech').each(function(index, elem) {
+    $(elem).removeClass('Selected');
+  });
+}
+
+function enablePurchase(val) {
+  $('#purchase').prop('disabled', !val);
+}
 
 function parsePurchased() {
   var purchased = getURLParameter('purchased');
@@ -306,6 +356,7 @@ function parsePurchased() {
 }
 
 function hideTechnologies() {
+  console.debug('Hide technologies');
   // TODO(ndunn): this should be the other way, or there should be
   // a better way to figure this out.
   $('td.tech').each(function(index, elem) {
@@ -332,7 +383,38 @@ function canGet(technology_id) {
   if (!tech) {
     alert('mismatch in ' + technology_id);
   }
-  return tech.dependencies.length == 0;
+
+  // If you already have it, cannot acquire it again
+  for (var i = 0; i < this_.purchased.length; i++) {
+    if (this_.purchased[i] == tech.id) {
+      console.debug('Already own ' + tech.id);
+      return false;
+    }
+  }
+
+  // Nothing required, so can automatically get it
+  if (tech.dependencies.length == 0) {
+    return true;
+  }
+
+  // Either an AND or OR of the necessary techs
+  
+  // Check if you have all of the prereqs
+  var numPrereqsMet = 0;
+  // By default, only one is necessary...
+  var numPrereqs = 1;
+  // But sometimes all are necessary
+  if (tech.and_dep) {
+    numPrereqs = tech.dependencies.length;
+  }
+  for (var i = 0; i < tech.dependencies.length; i++) {
+    for (var j = 0; j < this_.purchased.length; j++) {
+      if (tech.dependencies[i].id == this_.purchased[j]) {
+        numPrereqsMet++;
+      }
+    }
+  }
+  return numPrereqsMet >= numPrereqs;
 }
 
 // TODO(ndunn): awful awful awful.
