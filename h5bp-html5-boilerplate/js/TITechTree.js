@@ -504,9 +504,31 @@ function calculatePaths(tech, depth) {
   return TECH_PATHS[tech.id];
 }
 
+function calculateShortestRemainingPath(tech) {
+  if (canGet(tech.id) || owns(tech.id)) {
+    return [];
+  }
+  var all_paths = calculatePaths(tech);
+  var shortest_path = undefined;
+  for (var i = 0; i < all_paths.length; i++) {
+    var candidate_path = [];
+    var cur_path = all_paths[i];
+    // Add each one we don't own in order
+    for (var j = 0; j < cur_path.length; j++) {
+      if (!owns(cur_path[j].id)) {
+        candidate_path.push(cur_path[j]);
+      }
+    }
+    if (shortest_path == undefined || shortest_path.length > candidate_path.length) {
+      shortest_path = candidate_path;
+    }
+  }
+  return shortest_path;
+}
+
 // TODO(ndunn): calculate all paths, pick shortest num missing Shortest path
-function getNumMissingDependencies(tech) {
-  return 0;
+function getMinNumMissingDependencies(tech) {
+  return calculateShortestRemainingPath(tech).length;
 }
 
 
@@ -540,6 +562,7 @@ function createTechHTML(tech) {
       return tech.name;
     });
   });
+  var numRemaining = getMinNumMissingDependencies(tech);
   
   var icon = '';
   if (owned) {
@@ -551,7 +574,7 @@ function createTechHTML(tech) {
   else {
     icon = 'img/padlock_closed.png';
   }
-  return '<img width="24" height="24" src="' + icon + '"/>' + name + '<br/>' + short_desc + '<br/>Paths: ' + path_names;
+  return '<img width="24" height="24" src="' + icon + '"/>' + name + '<br/>' + short_desc + '<br/>Num techs remaining: ' + numRemaining;
 }
 
 
