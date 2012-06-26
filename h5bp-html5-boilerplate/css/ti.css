@@ -71,6 +71,7 @@ td.Unselected {
 td.Selected {
   opacity: 1.0;
   border-color: black;
+  font-weight: bold;
   border-width: 2px;
 }
 
@@ -92,3 +93,10 @@ td.Purchased {
   font-weight: bold;
 }
 
+img {
+  float: left;
+}
+
+p.fulltext {
+  font-weight: bold;
+}

@@ -358,6 +358,12 @@ var this_ = this;
 // memoize the calculated paths
 var pathsMap = {};
 
+var hide = getURLParameter('hide') == ['true'];
+if (hide) {
+  console.debug('checking the hide unavailable techs button');
+  $('#hide_unavailable_techs').prop('checked', true);
+}
+
 // TODO(ndunn): state should be kept via url params for v1.0
 var purchased = parsePurchased();
 
@@ -367,14 +373,7 @@ $(purchased).each(function(index, elem) {
   purchase(elem);
 });
 
-
 var selection = null;
-var hide = getURLParameter('hide') == ['true'];
-if (hide) {
-  console.debug('checking the hide unavailable techs button');
-  $('#hide_unavailable_techs').prop('checked', true);
-  hideTechnologies();
-}
 
 // disable purchase button until selection is made
 enablePurchase(false);
@@ -388,17 +387,16 @@ $('#hide_unavailable_techs').change(function() {
   // Going from unclicked to clicked state
   if ($(this)[0].checked) {
     this_.hide = true;
-    hideTechnologies();
+    refresh();
   } else {
     this_.hide = false;
-    unhideTechnologies();
+    refresh();
   }
 });
 
 $('#purchase').click(function() {
-  unselectAll();
   purchase(this_.selection);
-  createTable();
+  refresh();
 });
 
 function update() {
@@ -407,15 +405,12 @@ function update() {
 
 function refresh() {
   console.debug('Refreshing');
-  console.debug('Hidden: ' + this_.hide);
-  if (this_.hide) {
-    hideTechnologies();
-  }
+  createTable();
 }
 
-function purchase(technology) {
-  this_.purchased.push(technology);
-  $('#' + technology).addClass('Purchased');
+function purchase(technology_id) {
+  this_.purchased.push(technology_id);
+  $('#' + technology_id).addClass('Purchased');
   console.debug('Purchased technologies: ' + this_.purchased);
   refresh();
 }
@@ -562,7 +557,6 @@ function createTechHTML(tech) {
       return tech.name;
     });
   });
-  var numRemaining = getMinNumMissingDependencies(tech);
   
   var icon = '';
   if (owned) {
@@ -572,16 +566,28 @@ function createTechHTML(tech) {
     icon = 'img/padlock_open.png';
   }
   else {
-    icon = 'img/padlock_closed.png';
+    var numRemaining = getMinNumMissingDependencies(tech);
+    icon = 'img/padlock_closed_' + numRemaining + '.png';
   }
-  return '<img width="24" height="24" src="' + icon + '"/>' + name + '<br/>' + short_desc + '<br/>Num techs remaining: ' + numRemaining;
+  return '<img width="36" height="36" src="' + icon + '"/>' + name + '<br/>' + short_desc;
 }
 
+function selectedTech() {
+  if (!this_.selection) {
+    return undefined;
+  } else {
+    return 
+  }
+}
 
 // based on http://bl.ocks.org/2605010
 function createTable() {
   console.debug('Creating table');
   d3.selectAll('table').remove();
+
+  d3.selectAll('p.fulltext').remove();
+  d3.selectAll('p.prereqs').remove();
+  
   var table = d3.select('#grid').append('table')
     .attr('id', 'tech_grid');
   
@@ -605,41 +611,53 @@ function createTable() {
       $(this).removeClass('Hover');
     });
 
-     $('#tech_grid td.tech').click(function() {
+   $('#tech_grid td.tech').click(function() {
        var clicked = $(this)[0].id;
        if (clicked == this_.selection) {
-         unselectAll();
-         this_.selection = null;
-         enablePurchase(false);
-         return;
+         this._selection = undefined;
+         refresh();
        }
        else {
-         unselectAll();
          this_.selection = $(this)[0].id;
-         // New selection is made; see if we can purchase it
-         var canPurchase = canGet(this_.selection);
-         enablePurchase(canPurchase);
-
-         $(this).addClass('Selected');
+         refresh();
        }
      });
+
+
+  unselectAll();
+  if (this_.selection == undefined) {
+    enablePurchase(false);
+  } else {
+    var canPurchase = canGet(this_.selection);
+    enablePurchase(canPurchase);
+    $('#' + this_.selection).addClass('Selected');
+    
+    // Hack - convert from the id string to the real technology.
+    var technology = this_[this_.selection.toUpperCase()];
+    
+    console.debug('selected technology: ' + technology.name);
+    // Add text about the selection
+    d3.select('#full_text').data(technology.full_text.split('\n'))
+      .enter()
+      .append('p')
+      .attr('class', function(d) { return 'fulltext'; })
+      .text(function(d) { return d; });
+      
+    // array of arrays - each array is path to this technology
+    d3.select('div').data(calculatePaths(technology))
+      .enter()
+      .append('p')
+      .text(function(d) { 
+        return $.map(d, function(tech, j) {
+          return tech.name;
+        });
+      })
+      .attr('class', 'prereqs');
+  }
   
-  // var html = '<table id="tech_grid" class="front" cellspacing="10">';
-  // 
-  //   for (r = 0; r < ROW_ORDER.length; r++) {
-  //     row = ROW_ORDER[r];
-  //     tech_type = row[0].type;
-  // 
-  //     html += '<tr class="' + tech_type + '">\n'
-  //     html += '  <td class="' + tech_type + '">' + tech_type + '</td>\n'
-  //     for (i = 0; i < row.length; i++) {
-  //       var tech = row[i];
-  //       // TODO(ndunn): How do I bind these icons to the domain objects
-  //       html += '  <td class="' + tech_type + ' tech" id="' + tech.id + '">' + tech.name + '<br/>' + tech.short_description + '<br/><img src="img/padlock_closed.png" width="24" height="24"></img></td>\n'
-  //     }
-  //     html += '</tr>\n'
-  //   }
-  //  html += '</table>';
-  //  console.debug(html);
-  //  d3.select('#grid').html(html);
+  if (this_.hide) {
+    hideTechnologies();
+  } else {
+    unhideTechnologies();
+  }
 }
