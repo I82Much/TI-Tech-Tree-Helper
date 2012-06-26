@@ -253,10 +253,11 @@ var ROW_ORDER = [COMBAT_TECHS, BIOTECH_TECHS, GENERAL_TECHS, LOGISTIC_TECHS];
 
 var this_ = this;
 
-createTable();
-
 // TODO(ndunn): state should be kept via url params for v1.0
 var purchased = parsePurchased();
+
+createTable();
+
 $(purchased).each(function(index, elem) {
   purchase(elem);
 });
@@ -275,33 +276,7 @@ enablePurchase(false);
 
 //http://trends.truliablog.com/vis/tru247/tru247.js?v=1.01
 
-// Hover listener for the table
-$('#tech_grid td.tech').hover(function() {
-    $(this).addClass('Hover');
-    // Display all of the immediate dependencies
-    //console.debug($(this));
-	}, function() {
-	  $(this).removeClass('Hover');
-	});
 
-$('#tech_grid td.tech').click(function() {
-  var clicked = $(this)[0].id;
-  if (clicked == this_.selection) {
-    unselectAll();
-    this_.selection = null;
-    enablePurchase(false);
-    return;
-  }
-  else {
-    unselectAll();
-    this_.selection = $(this)[0].id;
-    // New selection is made; see if we can purchase it
-    var canPurchase = canGet(this_.selection);
-    enablePurchase(canPurchase);
-  
-    $(this).addClass('Selected');
-  }
-});
 
 // Hide unavailable technologies
 $('#hide_unavailable_techs').change(function() {
@@ -318,7 +293,14 @@ $('#hide_unavailable_techs').change(function() {
 $('#purchase').click(function() {
   unselectAll();
   purchase(this_.selection);
+  createTable();
 });
+
+function update() {
+  console.debug('Update');
+  
+}
+
 
 function refresh() {
   console.debug('Refreshing');
@@ -385,18 +367,14 @@ function canGet(technology_id) {
   }
 
   // If you already have it, cannot acquire it again
-  for (var i = 0; i < this_.purchased.length; i++) {
-    if (this_.purchased[i] == tech.id) {
-      console.debug('Already own ' + tech.id);
-      return false;
-    }
+  if (this_.owns(technology_id)) {
+    return false;
   }
 
   // Nothing required, so can automatically get it
   if (tech.dependencies.length == 0) {
     return true;
   }
-
   // Either an AND or OR of the necessary techs
   
   // Check if you have all of the prereqs
@@ -417,6 +395,15 @@ function canGet(technology_id) {
   return numPrereqsMet >= numPrereqs;
 }
 
+function owns(technology_id) {
+  for (var i = 0; i < this_.purchased.length; i++) {
+    if (this_.purchased[i] == tech.id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // TODO(ndunn): awful awful awful.
 // http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
 function getURLParameter(name) {
@@ -425,22 +412,110 @@ function getURLParameter(name) {
     );
 }
 
-function createTable() {
-  var html = '<table id="tech_grid" class="front" cellspacing="10">';
-
-  for (r = 0; r < ROW_ORDER.length; r++) {
-    row = ROW_ORDER[r];
-    tech_type = row[0].type;
-
-    html += '<tr class="' + tech_type + '">\n'
-    html += '  <td class="' + tech_type + '">' + tech_type + '</td>\n'
-    for (i = 0; i < row.length; i++) {
-      var tech = row[i];
-      html += '  <td class="' + tech_type + ' tech" id="' + tech.id + '">' + tech.name + '<br/>' + tech.short_description + '</td>\n'
-    }
-    html += '</tr>\n'
+function createTechHTML(tech) {
+  var name = tech.name;
+  var short_desc = tech.short_description;
+  var can_acquire = this_.canGet(tech.id);
+  var owned = this_.owns(tech.id);
+  // TODO(ndunn): Calculate number of missing dependencies
+  var num_missing_deps = 0;
+  var icon = '';
+  if (owned) {
+    icon = 'img/checkbox_checked.png';
   }
-	html += '</table>';
-	console.debug(html);
-	d3.select('#grid').html(html);
+  else if (can_acquire) {
+    icon = 'img/padlock_open.png';
+  }
+  else {
+    icon = 'img/padlock_closed.png';
+  }
+  return '<img width="24" height="24" src="' + icon + '"/>' + name + '<br/>' + short_desc;
+}
+
+// based on http://bl.ocks.org/2605010
+function createTable() {
+  d3.selectAll('table').remove();
+  var table = d3.select('#grid').append('table')
+    .attr('id', 'tech_grid');
+  
+  var row = table.selectAll('.row')
+    .data(ROW_ORDER)
+    .enter().append('tr')
+    .attr("class", function(d) { return d[0].type; });
+                
+  var col = row.selectAll(".cell")
+    .data(function (d) { return d; })
+    .enter().append('td')
+    .attr('class', function(d) { return d.type + ' ' + 'tech'; })
+    .attr('id', function(d) { return d.id; })
+    .html(createTechHTML)
+    .on('mouseover', function() {
+      $(this).addClass('Hover');
+      // Display all of the immediate dependencies
+      //console.debug($(this));
+    })
+    .on('mouseout', function() {
+      $(this).removeClass('Hover');
+    })
+    
+
+
+
+                     // .on('mouseover', function() {
+                     //    d3.select(this)
+                     //        .style('fill', '#0F0');
+                     // })
+                     // .on('mouseout', function() {
+                     //    d3.select(this)
+                     //        .style('fill', '#FFF');
+                     // })
+                     // .on('click', function() {
+                     //    console.log(d3.select(this));
+                     // })
+                     // .style("fill", '#FFF')
+                     // .style("stroke", '#555');
+  
+     // Hover listener for the table
+     // $('#tech_grid td.tech').hover(function() {
+     //     }, function() {
+     //         $(this).removeClass('Hover');
+     //       });
+
+     $('#tech_grid td.tech').click(function() {
+       var clicked = $(this)[0].id;
+       if (clicked == this_.selection) {
+         unselectAll();
+         this_.selection = null;
+         enablePurchase(false);
+         return;
+       }
+       else {
+         unselectAll();
+         this_.selection = $(this)[0].id;
+         // New selection is made; see if we can purchase it
+         var canPurchase = canGet(this_.selection);
+         enablePurchase(canPurchase);
+
+         $(this).addClass('Selected');
+       }
+     });
+  
+  // var html = '<table id="tech_grid" class="front" cellspacing="10">';
+  // 
+  //   for (r = 0; r < ROW_ORDER.length; r++) {
+  //     row = ROW_ORDER[r];
+  //     tech_type = row[0].type;
+  // 
+  //     html += '<tr class="' + tech_type + '">\n'
+  //     html += '  <td class="' + tech_type + '">' + tech_type + '</td>\n'
+  //     for (i = 0; i < row.length; i++) {
+  //       var tech = row[i];
+  //       // TODO(ndunn): How do I bind these icons to the domain objects
+  //       html += '  <td class="' + tech_type + ' tech" id="' + tech.id + '">' + tech.name + '<br/>' + tech.short_description + '<br/><img src="img/padlock_closed.png" width="24" height="24"></img></td>\n'
+  //     }
+  //     html += '</tr>\n'
+  //   }
+  //  html += '</table>';
+  //  console.debug(html);
+  //  d3.select('#grid').html(html);
 }
