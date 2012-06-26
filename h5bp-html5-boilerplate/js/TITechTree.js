@@ -586,7 +586,7 @@ function createTable() {
   d3.selectAll('table').remove();
 
   d3.selectAll('p.fulltext').remove();
-  d3.selectAll('p.prereqs').remove();
+  d3.selectAll('#prereqs > ul').remove();
   
   var table = d3.select('#grid').append('table')
     .attr('id', 'tech_grid');
@@ -637,20 +637,24 @@ function createTable() {
     
     console.debug('selected technology: ' + technology.name);
     // Add text about the selection
-    d3.select('#full_text').data(technology.full_text.split('\n'))
+    d3.select('#fulltext').selectAll('text_paragraphs')
+      .data(technology.full_text.split('\n'))
       .enter()
       .append('p')
       .attr('class', function(d) { return 'fulltext'; })
       .text(function(d) { return d; });
       
     // array of arrays - each array is path to this technology
-    d3.select('div').data(calculatePaths(technology))
+    d3.select('#prereqs').append('ul').selectAll('prereqs')
+      .data(calculatePaths(technology))
       .enter()
-      .append('p')
+      .append('li')
       .text(function(d) { 
-        return $.map(d, function(tech, j) {
+        // d is an array of technologies
+        var tech_names = $.map(d, function(tech, j) {
           return tech.name;
         });
+        return tech_names.join(' -> ');
       })
       .attr('class', 'prereqs');
   }

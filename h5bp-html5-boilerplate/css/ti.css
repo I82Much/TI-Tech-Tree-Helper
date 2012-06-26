@@ -71,7 +71,7 @@ td.Unselected {
 td.Selected {
   opacity: 1.0;
   border-color: black;
-  font-weight: bold;
+  font-weight: bolder;
   border-width: 2px;
 }
 
