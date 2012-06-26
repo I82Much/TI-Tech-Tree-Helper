@@ -529,7 +529,7 @@ function getMinNumMissingDependencies(tech) {
 
 function owns(technology_id) {
   for (var i = 0; i < this_.purchased.length; i++) {
-    if (this_.purchased[i] == tech.id) {
+    if (this_.purchased[i] == technology_id) {
       return true;
     }
   }
@@ -649,10 +649,15 @@ function createTable() {
       .data(calculatePaths(technology))
       .enter()
       .append('li')
-      .text(function(d) { 
+      .html(function(d) { 
         // d is an array of technologies
         var tech_names = $.map(d, function(tech, j) {
-          return tech.name;
+          if (owns(tech.id)) {
+            return '<span class="owned">' + tech.name + '</span>';
+          }
+          else {
+            return '<span class="unowned">' + tech.name + '</span>';
+          }
         });
         return tech_names.join(' -> ');
       })

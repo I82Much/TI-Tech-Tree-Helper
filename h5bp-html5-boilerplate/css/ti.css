@@ -100,3 +100,7 @@ img {
 p.fulltext {
   font-weight: bold;
 }
+
+span.owned {
+  text-decoration:line-through;
+}
