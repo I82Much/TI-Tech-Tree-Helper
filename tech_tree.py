@@ -332,16 +332,31 @@ def main():
   # print EnumeratePaths(TYPE_IV_DRIVE)
   #   print EnumeratePaths(X_89_BACTERIAL_WEAPON)
   
+  assert EnumeratePaths(HYLAR_V_ASSAULT_LASER) == [[]]
   
+  print 'var TECH_PATHS = {};'
   for tech_type in TECH_TYPES:
-      print tech_type
-      for t in TOPOLOGICAL_ORDER:
-        if t.type == tech_type:
-          print '\t' + t.name
-          paths = EnumeratePaths(t)
-          print '\t %d paths' %(len(paths))
-          for path in paths:
-            print '\t\t: %d ' %(len(path)) + '->'.join([dep_tech.name for dep_tech in path])
+    for tech in TOPOLOGICAL_ORDER:
+      if tech.type == tech_type:
+        # 2 dimensional array
+        paths = EnumeratePaths(tech)
+        
+        path_strings = []
+        for path in paths:
+          #path_strings.append(str([MakeConstant(t.name).lower() for t in path]))
+          path_strings.append('[' + ', '.join([MakeConstant(t.name) for t in path]) + ']')
+
+        print 'TECH_PATHS[\'{tech_id}\'] = ['.format(
+          tech_id=MakeConstant(tech.name).lower())
+        print ',\n'.join(['  ' + x for x in path_strings])
+        print '];'
+        
+        
+          # print '\t' + t.name
+          # paths = EnumeratePaths(t)
+          # print '\t %d paths' %(len(paths))
+          # for path in paths:
+          #   print '\t\t: %d ' %(len(path)) + '->'.join([dep_tech.name for dep_tech in path])
         
   
 if __name__ == '__main__':

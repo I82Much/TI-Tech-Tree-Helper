@@ -251,7 +251,112 @@ var LOGISTIC_TECHS = [ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS, TYPE_IV_DRIVE, ADVA
 
 var ROW_ORDER = [COMBAT_TECHS, BIOTECH_TECHS, GENERAL_TECHS, LOGISTIC_TECHS];
 
+// Precomputed tech paths
+var TECH_PATHS = {};
+TECH_PATHS['hylar_v_assault_laser'] = [
+  []
+];
+TECH_PATHS['deep_space_cannon'] = [
+  [HYLAR_V_ASSAULT_LASER]
+];
+TECH_PATHS['war_sun'] = [
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS, HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON]
+];
+TECH_PATHS['magen_defense_grid'] = [
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON]
+];
+TECH_PATHS['assault_cannon'] = [
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ANTIMASS_DEFLECTORS, CYBERNETICS],
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS]
+];
+TECH_PATHS['graviton_negator'] = [
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ANTIMASS_DEFLECTORS, CYBERNETICS, ASSAULT_CANNON],
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS, ASSAULT_CANNON]
+];
+TECH_PATHS['stasis_capsules'] = [
+  [ENVIRO_COMPENSATOR]
+];
+TECH_PATHS['neural_motivator'] = [
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY],
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES]
+];
+TECH_PATHS['dacxive_animators'] = [
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR],
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, NEURAL_MOTIVATOR]
+];
+TECH_PATHS['cybernetics'] = [
+  [ANTIMASS_DEFLECTORS],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES]
+];
+TECH_PATHS['gen_synthesis'] = [
+  [ANTIMASS_DEFLECTORS, CYBERNETICS],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS]
+];
+TECH_PATHS['x_89_bacterial_weapon'] = [
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ANTIMASS_DEFLECTORS, CYBERNETICS, ASSAULT_CANNON],
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS, ASSAULT_CANNON],
+  [ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS, HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, MAGEN_DEFENSE_GRID, LIGHT_WAVE_DEFLECTORS, TRANSIT_DIODES],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, DACXIVE_ANIMATORS, TRANSIT_DIODES],
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, DACXIVE_ANIMATORS, TRANSIT_DIODES],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, NEURAL_MOTIVATOR, DACXIVE_ANIMATORS, TRANSIT_DIODES]
+];
+TECH_PATHS['enviro_compensator'] = [
+  []
+];
+TECH_PATHS['sarween_tools'] = [
+  [ENVIRO_COMPENSATOR]
+];
+TECH_PATHS['micro_technology'] = [
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES],
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS]
+];
+TECH_PATHS['integrated_economy'] = [
+  [ANTIMASS_DEFLECTORS, CYBERNETICS, ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY],
+  [ANTIMASS_DEFLECTORS, CYBERNETICS, ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS, ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS, ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY]
+];
+TECH_PATHS['transit_diodes'] = [
+  [ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS, HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, MAGEN_DEFENSE_GRID, LIGHT_WAVE_DEFLECTORS],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, DACXIVE_ANIMATORS],
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, DACXIVE_ANIMATORS],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, NEURAL_MOTIVATOR, DACXIVE_ANIMATORS]
+];
+TECH_PATHS['graviton_laser_system'] = [
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON]
+];
+TECH_PATHS['antimass_deflectors'] = [
+  []
+];
+TECH_PATHS['xrd_transporters'] = [
+  [ANTIMASS_DEFLECTORS]
+];
+TECH_PATHS['type_iv_drive'] = [
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS],
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, NEURAL_MOTIVATOR, ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS]
+];
+TECH_PATHS['advanced_fighters'] = [
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS, TYPE_IV_DRIVE],
+  [ENVIRO_COMPENSATOR, SARWEEN_TOOLS, MICRO_TECHNOLOGY, NEURAL_MOTIVATOR, ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS, TYPE_IV_DRIVE],
+  [ENVIRO_COMPENSATOR, STASIS_CAPSULES, NEURAL_MOTIVATOR, ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS, TYPE_IV_DRIVE]
+];
+TECH_PATHS['light_wave_deflectors'] = [
+  [ANTIMASS_DEFLECTORS, XRD_TRANSPORTERS, HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, MAGEN_DEFENSE_GRID]
+];
+TECH_PATHS['fleet_logistics'] = [
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ANTIMASS_DEFLECTORS, CYBERNETICS, ASSAULT_CANNON, GRAVITON_NEGATOR],
+  [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS, ASSAULT_CANNON, GRAVITON_NEGATOR]
+];
+
+
 var this_ = this;
+
+// TODO(ndunn): Move to closure
+// memoize the calculated paths
+var pathsMap = {};
 
 // TODO(ndunn): state should be kept via url params for v1.0
 var purchased = parsePurchased();
@@ -298,9 +403,7 @@ $('#purchase').click(function() {
 
 function update() {
   console.debug('Update');
-  
 }
-
 
 function refresh() {
   console.debug('Refreshing');
@@ -395,6 +498,18 @@ function canGet(technology_id) {
   return numPrereqsMet >= numPrereqs;
 }
 
+
+// Returns all paths which could possibly lead to this technology
+function calculatePaths(tech, depth) {
+  return TECH_PATHS[tech.id];
+}
+
+// TODO(ndunn): calculate all paths, pick shortest num missing Shortest path
+function getNumMissingDependencies(tech) {
+  return 0;
+}
+
+
 function owns(technology_id) {
   for (var i = 0; i < this_.purchased.length; i++) {
     if (this_.purchased[i] == tech.id) {
@@ -419,6 +534,13 @@ function createTechHTML(tech) {
   var owned = this_.owns(tech.id);
   // TODO(ndunn): Calculate number of missing dependencies
   var num_missing_deps = 0;
+  var paths = calculatePaths(tech);
+  var path_names = $.map(paths, function(path, i) {
+    return $.map(path, function(tech, j) {
+      return tech.name;
+    });
+  });
+  
   var icon = '';
   if (owned) {
     icon = 'img/checkbox_checked.png';
@@ -429,11 +551,13 @@ function createTechHTML(tech) {
   else {
     icon = 'img/padlock_closed.png';
   }
-  return '<img width="24" height="24" src="' + icon + '"/>' + name + '<br/>' + short_desc;
+  return '<img width="24" height="24" src="' + icon + '"/>' + name + '<br/>' + short_desc + '<br/>Paths: ' + path_names;
 }
+
 
 // based on http://bl.ocks.org/2605010
 function createTable() {
+  console.debug('Creating table');
   d3.selectAll('table').remove();
   var table = d3.select('#grid').append('table')
     .attr('id', 'tech_grid');
@@ -456,30 +580,7 @@ function createTable() {
     })
     .on('mouseout', function() {
       $(this).removeClass('Hover');
-    })
-    
-
-
-
-                     // .on('mouseover', function() {
-                     //    d3.select(this)
-                     //        .style('fill', '#0F0');
-                     // })
-                     // .on('mouseout', function() {
-                     //    d3.select(this)
-                     //        .style('fill', '#FFF');
-                     // })
-                     // .on('click', function() {
-                     //    console.log(d3.select(this));
-                     // })
-                     // .style("fill", '#FFF')
-                     // .style("stroke", '#555');
-  
-     // Hover listener for the table
-     // $('#tech_grid td.tech').hover(function() {
-     //     }, function() {
-     //         $(this).removeClass('Hover');
-     //       });
+    });
 
      $('#tech_grid td.tech').click(function() {
        var clicked = $(this)[0].id;
