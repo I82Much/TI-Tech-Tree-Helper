@@ -409,7 +409,9 @@ function refresh() {
 }
 
 function purchase(technology_id) {
-  this_.purchased.push(technology_id);
+  if (!owns(technology_id)) {
+    this_.purchased.push(technology_id);
+  }
   $('#' + technology_id).addClass('Purchased');
   console.debug('Purchased technologies: ' + this_.purchased);
   refresh();
@@ -429,7 +431,6 @@ function enablePurchase(val) {
 function parsePurchased() {
   var purchased = getURLParameter('purchased');
   if (purchased != ["null"]) {
-    //return purchased.split(',');
     return purchased.split(',');
   } else {
     return [];
@@ -460,7 +461,7 @@ function unhideTechnologies() {
 // TODO(ndunn): flatten out the different paths
 function canGet(technology_id) {
   // TODO(ndunn): fix this  
-  tech = this_[technology_id.toUpperCase()];
+  var tech = this_[technology_id.toUpperCase()];
   if (!tech) {
     alert('mismatch in ' + technology_id);
   }
@@ -484,6 +485,7 @@ function canGet(technology_id) {
   if (tech.and_dep) {
     numPrereqs = tech.dependencies.length;
   }
+  
   for (var i = 0; i < tech.dependencies.length; i++) {
     for (var j = 0; j < this_.purchased.length; j++) {
       if (tech.dependencies[i].id == this_.purchased[j]) {
