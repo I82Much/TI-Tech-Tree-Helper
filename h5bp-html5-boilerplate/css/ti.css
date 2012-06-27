@@ -71,12 +71,22 @@ td.Purchased {
   font-weight: bold;
 }
 
+td.RowLabel {
+  font-weight: bolder;
+  vertical-align:middle;
+}
+
+tspan.TechName {
+  margin: 2px;
+  font-size: 110%;
+}
+
 img {
   float: left;
 }
 
 p.fulltext {
-  font-weight: bold;
+
 }
 
 span.owned {

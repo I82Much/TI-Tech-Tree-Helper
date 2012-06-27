@@ -582,15 +582,7 @@ function createTechHTML(tech) {
     var numRemaining = getMinNumMissingDependencies(tech);
     icon = 'img/padlock_closed_' + numRemaining + '.png';
   }
-  return '<img width="36" height="36" src="' + icon + '"/>' + name + '<br/>' + short_desc;
-}
-
-function selectedTech() {
-  if (!this_.selection) {
-    return undefined;
-  } else {
-    return 
-  }
+  return '<img width="36" height="36" src="' + icon + '"/><tspan class="TechName">' + name + '</tspan><br/>' + short_desc;
 }
 
 // based on http://bl.ocks.org/2605010
@@ -627,7 +619,7 @@ function createTable() {
   // Add the row labels
   $('tr').prepend(function(index, html) {
     var techType = ROW_ORDER[index][0].type;
-    return '<td class="' + techType + '">' + techType + '</td>';
+    return '<td class="' + techType + ' RowLabel">' + techType + '</td>';
   });
 
    $('#tech_grid td.tech').click(function() {
