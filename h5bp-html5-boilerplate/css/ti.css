@@ -50,7 +50,7 @@ td.Selected {
   opacity: 1.0;
   border-color: black;
   font-weight: bolder;
-/*  border-width: 2px;*/
+  border-width: 3px;
 }
 
 td.Hover {
@@ -74,6 +74,16 @@ td.Purchased {
 td.RowLabel {
   font-weight: bolder;
   vertical-align:middle;
+}
+
+td.Required {
+  border-color: red;
+  border-width: 3px;
+}
+
+td.RequiredButOwned {
+  border-color: green;
+  border-width: 3px;
 }
 
 tspan.TechName {

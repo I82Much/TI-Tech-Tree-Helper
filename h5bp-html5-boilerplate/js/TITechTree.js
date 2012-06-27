@@ -428,10 +428,11 @@ function purchase(technology_id) {
 }
 
 function unselectAll() {
-  $('#tech_grid td.tech').each(function(index, elem) {
-    $(elem).removeClass('Selected');
-    $(elem).addClass('Unselected');
-  });
+  $('#tech_grid td.tech')
+    .removeClass('Selected')
+    .addClass('Unselected')
+    .removeClass('Required')
+    .removeClass('RequiredButOwned');
 }
 
 function enablePurchase(val) {
@@ -649,7 +650,6 @@ function createTable() {
     var technology = this_[this_.selection.toUpperCase()];
 
     $('#technology_label').text('Technology: ' + technology.name);
-
     
     console.debug('selected technology: ' + technology.name);
     // Add text about the selection
@@ -661,8 +661,9 @@ function createTable() {
       .text(function(d) { return d; });
       
     // array of arrays - each array is path to this technology
+    var techPaths = calculatePaths(technology);
     d3.select('#prereqs').append('ul').selectAll('prereqs')
-      .data(calculatePaths(technology))
+      .data(techPaths)
       .enter()
       .append('li')
       .html(function(d) { 
@@ -678,6 +679,20 @@ function createTable() {
         return tech_names.join(' -> ');
       })
       .attr('class', 'prereqs');
+      
+      // For each element in a given path, mark it as on a path
+      // TODO(ndunn): Use d3?
+      for (var i = 0; i < techPaths.length; i++) {
+        var path = techPaths[i];
+        for (var j = 0; j < path.length; j++) {
+          var tech = path[j];
+          if (owns(tech.id)) {
+            $('#' + tech.id).addClass('RequiredButOwned');
+          } else{
+            $('#' + tech.id).addClass('Required');
+          }
+        }
+      }
   }
   
   if (this_.hide) {
