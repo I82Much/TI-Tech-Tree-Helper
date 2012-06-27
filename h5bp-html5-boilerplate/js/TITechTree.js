@@ -394,6 +394,16 @@ $('#hide_unavailable_techs').change(function() {
   }
 });
 
+$('#hide_legend').change(function() {
+  // Going from unclicked to clicked state
+  if ($(this)[0].checked) {
+    $('#legend').addClass('hidden');
+  } else {
+    $('#legend').removeClass('hidden');
+  }
+});
+
+
 $('#purchase').click(function() {
   purchase(this_.selection);
   refresh();

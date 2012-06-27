@@ -12,7 +12,7 @@
        More info: h5bp.com/i/378 -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title></title>
+  <title>Twilight Imperium Technology Tree</title>
   <meta name="description" content="">
 
   <!-- Mobile viewport optimized: h5bp.com/viewport -->
@@ -43,17 +43,37 @@
   <div role="main">
 	<div id='num_purchased'/>
 	<div id='min_num_turns_to_acquire_starred_items'/>
-	<div id='controls'>
-		<input type="checkbox" id="hide_unavailable_techs" value="false"/>
-		<label for="hide_unavailable_techs">Hide unavailable technologies</label>
-	</div>
 	
 	<div id="grid"></div>
-	<button alignment="center" id='purchase' type="button">Purchase</button>
+	
+	<div id='controls'>
+		<button alignment="center" id='purchase' type="button">Purchase</button>
+		&nbsp;
+		<input type="checkbox" id="hide_unavailable_techs" value="false"/>
+		<label for="hide_unavailable_techs">Hide unavailable technologies</label>
+		
+		&nbsp;
+		<input type="checkbox" id="hide_legend" value="false"/>
+		<label for="hide_legend">Hide legend</label>
+	</div>
+	
 	<p>Full text description:</p>
 	<div id="fulltext"></div>
 	<p>Paths to acquire technology:</p>
 	<div id="prereqs"></div>
+	
+	
+	<div id="legend">
+		<h2>Legend</h2>
+		<ul>
+			<li><img src="img/checkbox_checked.png"/> - Technology purchased</li>
+			<li><img src="img/padlock_open.png"/> - Technology may be purchased, all prereqs met</li>
+			<li><img src="img/padlock_closed_1.png"/> - Technology may not be purchased; 1 prereq missing</li>
+			<li>&hellip;</li>
+			<li><img src="img/padlock_closed_7.png"/> - Technology may not be purchased; 7 prereqs missing</li>
+		</ul>
+		
+	</div>
   </div>
 
   <footer>
