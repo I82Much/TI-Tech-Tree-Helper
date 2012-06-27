@@ -638,6 +638,8 @@ function createTable() {
   unselectAll();
   if (this_.selection == undefined) {
     enablePurchase(false);
+    $('#technology_label').text('Technology: ');
+    
   } else {
     var canPurchase = canGet(this_.selection);
     enablePurchase(canPurchase);
@@ -645,6 +647,9 @@ function createTable() {
     
     // Hack - convert from the id string to the real technology.
     var technology = this_[this_.selection.toUpperCase()];
+
+    $('#technology_label').text('Technology: ' + technology.name);
+
     
     console.debug('selected technology: ' + technology.name);
     // Add text about the selection
