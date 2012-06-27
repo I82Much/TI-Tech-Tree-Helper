@@ -38,9 +38,24 @@
 
 
   <header>
-	Twilight Imperium Helper
+
   </header>
-  <a href="techtree.html">Technology tree</a>
+  <div role="main">
+	<div id='num_purchased'/>
+	<div id='min_num_turns_to_acquire_starred_items'/>
+	<div id='controls'>
+		<input type="checkbox" id="hide_unavailable_techs" value="false"/>
+		<label for="hide_unavailable_techs">Hide unavailable technologies</label>
+	</div>
+	
+	<div id="grid"></div>
+	<button alignment="center" id='purchase' type="button">Purchase</button>
+	<p>Full text description:</p>
+	<div id="fulltext"></div>
+	<p>Paths to acquire technology:</p>
+	<div id="prereqs"></div>
+  </div>
+
   <footer>
 
   </footer>

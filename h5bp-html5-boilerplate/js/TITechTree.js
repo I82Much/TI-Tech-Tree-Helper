@@ -586,7 +586,6 @@ function createTable() {
   console.debug('Creating table');
   d3.selectAll('table').remove();
 
-
   d3.selectAll('#fulltext > p').remove();
   d3.selectAll('#prereqs > ul').remove();
   
@@ -598,7 +597,7 @@ function createTable() {
     .enter().append('tr')
     .attr("class", function(d) { return d[0].type; });
                 
-  var col = row.selectAll(".cell")
+  var col = row.selectAll('.cell')
     .data(function (d) { return d; })
     .enter().append('td')
     .attr('class', function(d) { return d.type + ' ' + 'tech'; })
@@ -612,6 +611,12 @@ function createTable() {
     .on('mouseout', function() {
       $(this).removeClass('Hover');
     });
+
+  // Add the row labels
+  $('tr').prepend(function(index, html) {
+    var techType = ROW_ORDER[index][0].type;
+    return '<td class="' + techType + '">' + techType + '</td>';
+  });
 
    $('#tech_grid td.tech').click(function() {
        var clicked = $(this)[0].id;
