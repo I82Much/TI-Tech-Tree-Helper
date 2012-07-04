@@ -363,8 +363,6 @@ Array.prototype.remove= function(){
     return this;
 }
 
-
-
 var this_ = this;
 
 // TODO(ndunn): Move to closure
@@ -621,6 +619,7 @@ function createTechHTML(tech) {
   var short_desc = tech.short_description;
   var can_acquire = this_.canGet(tech.id);
   var owned = this_.owns(tech.id);
+  var favorited = this_.isFavorited(tech.id);
   // TODO(ndunn): Calculate number of missing dependencies
   var num_missing_deps = 0;
   var paths = calculatePaths(tech);
@@ -641,7 +640,19 @@ function createTechHTML(tech) {
     var numRemaining = getMinNumMissingDependencies(tech);
     icon = 'img/padlock_closed_' + numRemaining + '.png';
   }
-  return '<img width="36" height="36" src="' + icon + '"/><tspan class="TechName">' + name + '</tspan><br/>' + short_desc;
+  
+  var starIcon = 'img/star_fav_empty.png';
+  if (favorited) {
+    starIcon = 'img/star_fav.png';
+  }
+  
+  html = '<img width="36" height="36" src="' + icon + '"/>' + 
+  '<tspan class="TechName">' + name + '</tspan>' +
+  '<img width="16" height="16" src="' + starIcon + '"/>' +
+  '<br/>' + short_desc;
+  
+  
+  return html;
 }
 
 // based on http://bl.ocks.org/2605010
