@@ -351,6 +351,19 @@ TECH_PATHS['fleet_logistics'] = [
   [HYLAR_V_ASSAULT_LASER, DEEP_SPACE_CANNON, ENVIRO_COMPENSATOR, STASIS_CAPSULES, CYBERNETICS, ASSAULT_CANNON, GRAVITON_NEGATOR]
 ];
 
+// http://stackoverflow.com/questions/3954438/remove-item-from-array-by-value
+Array.prototype.remove= function(){
+    var what, a= arguments, L= a.length, ax;
+    while(L && this.length){
+        what= a[--L];
+        while((ax= this.indexOf(what))!= -1){
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+}
+
+
 
 var this_ = this;
 
@@ -366,6 +379,7 @@ if (hide) {
 
 // TODO(ndunn): state should be kept via url params for v1.0
 var purchased = parsePurchased();
+var favorited = parsefavorited();
 
 createTable();
 
@@ -377,10 +391,9 @@ var selection = null;
 
 // disable purchase button until selection is made
 enablePurchase(false);
+enableStarButton(false);
 
 //http://trends.truliablog.com/vis/tru247/tru247.js?v=1.01
-
-
 
 // Hide unavailable technologies
 $('#hide_unavailable_techs').change(function() {
@@ -409,6 +422,12 @@ $('#purchase').click(function() {
   refresh();
 });
 
+$('#star').click(function() {
+  toggleFavorite(this_.selection);
+  refresh();
+});
+
+
 function update() {
   console.debug('Update');
 }
@@ -427,6 +446,18 @@ function purchase(technology_id) {
   refresh();
 }
 
+function toggleFavorite(technology_id) {
+  if (!isFavorited(technology_id)) {
+    this_.favorited.push(technology_id);
+    $('#' + technology_id).addClass('Favorited');
+  } else {
+    this_.favorited.remove(technology_id);
+    $('#' + technology_id).removeClass('Favorited');
+  }
+  console.debug('Favorited technologies: ' + this_.favorited);
+  refresh();
+}
+
 function unselectAll() {
   $('#tech_grid td.tech')
     .removeClass('Selected')
@@ -439,21 +470,39 @@ function enablePurchase(val) {
   $('#purchase').prop('disabled', !val);
 }
 
-function parsePurchased() {
-  var purchased = getURLParameter('purchased');
-  if (purchased != ["null"]) {
-    return purchased.split(',');
+function enableStarButton(val) {
+  $('#star').prop('disabled', !val);
+}
+
+function setStarLabel(val) {
+  $('#star').text(val);
+}
+
+function parseUrlParamList(param) {
+  var elements = getURLParameter(param);
+  if (elements != ["null"]) {
+    return elements.split(',');
   } else {
     return [];
   }
 }
+
+function parsePurchased() {
+  return parseUrlParamList('purchased');
+}
+
+function parsefavorited() {
+  return parseUrlParamList('favorited');
+}
+
+
 
 function hideTechnologies() {
   console.debug('Hide technologies');
   // TODO(ndunn): this should be the other way, or there should be
   // a better way to figure this out.
   $('td.tech').each(function(index, elem) {
-    console.debug($(this));
+    //console.debug($(this));
     
     if (!canGet(elem.id)) {
       $(elem).addClass('Unavailable');
@@ -550,6 +599,15 @@ function owns(technology_id) {
   return false;
 }
 
+function isFavorited(technology_id) {
+  for (var i = 0; i < this_.favorited.length; i++) {
+    if (this_.favorited[i] == technology_id) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // TODO(ndunn): awful awful awful.
 // http://stackoverflow.com/questions/1403888/get-url-parameter-with-jquery
 function getURLParameter(name) {
@@ -639,11 +697,22 @@ function createTable() {
   unselectAll();
   if (this_.selection == undefined) {
     enablePurchase(false);
+    enableStarButton(false);
     $('#technology_label').text('Technology: ');
+    setStarLabel('Favorite');
     
   } else {
     var canPurchase = canGet(this_.selection);
     enablePurchase(canPurchase);
+    
+    var _isFavorited = isFavorited(this_.selection);
+    if (_isFavorited) {
+      setStarLabel('Unfavorite');
+    } else {
+      setStarLabel('Favorite');
+    }
+    enableStarButton(true);
+    
     $('#' + this_.selection).addClass('Selected');
     
     // Hack - convert from the id string to the real technology.
