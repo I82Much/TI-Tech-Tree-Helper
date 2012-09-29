@@ -493,15 +493,12 @@ function parsefavorited() {
   return parseUrlParamList('favorited');
 }
 
-
-
 function hideTechnologies() {
   console.debug('Hide technologies');
   // TODO(ndunn): this should be the other way, or there should be
   // a better way to figure this out.
   $('td.tech').each(function(index, elem) {
     //console.debug($(this));
-    
     if (!canGet(elem.id)) {
       $(elem).addClass('Unavailable');
     } else {
@@ -512,13 +509,13 @@ function hideTechnologies() {
 
 function unhideTechnologies() {
   $('td.tech').each(function(index, elem) {
-    $(elem).removeClass('Unavailable'); 
+    $(elem).removeClass('Unavailable');
   });
 };
 
 // TODO(ndunn): flatten out the different paths
 function canGet(technology_id) {
-  // TODO(ndunn): fix this  
+  // TODO(ndunn): fix this
   var tech = this_[technology_id.toUpperCase()];
   if (!tech) {
     alert('mismatch in ' + technology_id);
@@ -534,7 +531,7 @@ function canGet(technology_id) {
     return true;
   }
   // Either an AND or OR of the necessary techs
-  
+
   // Check if you have all of the prereqs
   var numPrereqsMet = 0;
   // By default, only one is necessary...
@@ -543,7 +540,7 @@ function canGet(technology_id) {
   if (tech.and_dep) {
     numPrereqs = tech.dependencies.length;
   }
-  
+
   for (var i = 0; i < tech.dependencies.length; i++) {
     for (var j = 0; j < this_.purchased.length; j++) {
       if (tech.dependencies[i].id == this_.purchased[j]) {
@@ -628,7 +625,7 @@ function createTechHTML(tech) {
       return tech.name;
     });
   });
-  
+
   var icon = '';
   if (owned) {
     icon = 'img/checkbox_checked.png';
@@ -640,18 +637,18 @@ function createTechHTML(tech) {
     var numRemaining = getMinNumMissingDependencies(tech);
     icon = 'img/padlock_closed_' + numRemaining + '.png';
   }
-  
+
   var starIcon = 'img/star_fav_empty.png';
   if (favorited) {
     starIcon = 'img/star_fav.png';
   }
-  
-  html = '<img width="36" height="36" src="' + icon + '"/>' + 
+
+  html = '<img width="36" height="36" src="' + icon + '"/>' +
   '<tspan class="TechName">' + name + '</tspan>' +
   '<img width="16" height="16" src="' + starIcon + '"/>' +
   '<br/>' + short_desc;
-  
-  
+
+
   return html;
 }
 
@@ -662,15 +659,15 @@ function createTable() {
 
   d3.selectAll('#fulltext > p').remove();
   d3.selectAll('#prereqs > ul').remove();
-  
+
   var table = d3.select('#grid').append('table')
     .attr('id', 'tech_grid');
-  
+
   var row = table.selectAll('.row')
     .data(ROW_ORDER)
     .enter().append('tr')
     .attr("class", function(d) { return d[0].type; });
-                
+
   var col = row.selectAll('.cell')
     .data(function (d) { return d; })
     .enter().append('td')
@@ -711,11 +708,11 @@ function createTable() {
     enableStarButton(false);
     $('#technology_label').text('Technology: ');
     setStarLabel('Favorite');
-    
+
   } else {
     var canPurchase = canGet(this_.selection);
     enablePurchase(canPurchase);
-    
+
     var _isFavorited = isFavorited(this_.selection);
     if (_isFavorited) {
       setStarLabel('Unfavorite');
@@ -723,14 +720,14 @@ function createTable() {
       setStarLabel('Favorite');
     }
     enableStarButton(true);
-    
+
     $('#' + this_.selection).addClass('Selected');
-    
+
     // Hack - convert from the id string to the real technology.
     var technology = this_[this_.selection.toUpperCase()];
 
     $('#technology_label').text('Technology: ' + technology.name);
-    
+
     console.debug('selected technology: ' + technology.name);
     // Add text about the selection
     d3.select('#fulltext').selectAll('text_paragraphs')
@@ -739,14 +736,14 @@ function createTable() {
       .append('p')
       .attr('class', function(d) { return 'fulltext'; })
       .text(function(d) { return d; });
-      
+
     // array of arrays - each array is path to this technology
     var techPaths = calculatePaths(technology);
     d3.select('#prereqs').append('ul').selectAll('prereqs')
       .data(techPaths)
       .enter()
       .append('li')
-      .html(function(d) { 
+      .html(function(d) {
         // d is an array of technologies
         var tech_names = $.map(d, function(tech, j) {
           if (owns(tech.id)) {
@@ -759,7 +756,7 @@ function createTable() {
         return tech_names.join(' -> ');
       })
       .attr('class', 'prereqs');
-      
+
       // For each element in a given path, mark it as on a path
       // TODO(ndunn): Use d3?
       for (var i = 0; i < techPaths.length; i++) {
@@ -774,7 +771,7 @@ function createTable() {
         }
       }
   }
-  
+
   if (this_.hide) {
     hideTechnologies();
   } else {

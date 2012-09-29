@@ -4,7 +4,6 @@ body {
 
 tspan {
   font-size: x-small;
-  
 }
 table {
   border-collapse: separate;
@@ -13,8 +12,6 @@ table {
 
 td {
   font-size: small;
-  
-/*  border-radius: 4px;*/
   border-radius:10px;
   -moz-border-radius:10px; /* Firefox 3.6 and earlier */
   border: 1px solid white;
@@ -26,20 +23,24 @@ td.tech {
   height: 25%;
 }
 
+/* Red */
 td.Combat {
   background-color: #F0877A;
 }
 
+/* Green*/
 td.Biotech {
   background-color: #93F980;
 }
 
+/* Yellow */
 td.Logistics {
-  background-color: #FF9;
+  background-color: #98ACDA;
 }
 
+/* Blue */
 td.General {
-  background-color: #98ACDA;
+  background-color: #FF9;
 }
 
 td.Unselected {
